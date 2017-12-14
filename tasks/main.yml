@@ -1,0 +1,47 @@
+---
+# tasks file for postgres_exporter
+
+- name: add pg_stat_statements extention
+  postgresql_ext:
+    name: pg_stat_statements
+    db: postgres
+
+- name: create user for exporter
+  user: name='{{ pg_exporter_user }}'
+
+- name: create directory for exporter
+  file: state=directory path={{ pg_exporter_dir }} owner={{ pg_exporter_user }} recurse=true
+
+- name: create service
+  template: src='postgresql-exporter.service.j2' dest='/etc/systemd/system/postgresql-exporter.service'
+  notify: systemctl daemon-reload
+
+- meta: flush_handlers
+
+- name: download and unpack exporter
+  unarchive:
+    src: 'https://github.com/wrouesnel/postgres_exporter/releases/download/v{{ pg_exporter_version }}/postgres_exporter_v{{ pg_exporter_version }}_linux-amd64.tar.gz'
+    dest: '{{ pg_exporter_dir }}'
+    remote_src: yes
+    owner: '{{ pg_exporter_user }}'
+  notify: restart postgresql-exporter
+
+- name: create metrics file
+  template: src='metrics.yaml.j2' dest='{{ pg_exporter_dir }}/metrics.yaml' owner='{{ pg_exporter_user }}'
+  notify: restart postgresql-exporter
+
+- name: create env file (because I hate systemd-escape)
+  copy: content='{{ pg_exporter_connection_string }}' dest='{{ pg_exporter_dir }}/env' owner='{{ pg_exporter_user }}'
+  notify: restart postgresql-exporter
+
+- name: start service
+  service: name=postgresql-exporter state=started enabled=yes
+
+- name: Enable access to exporters
+  firewalld:
+    rich_rule='rule family="ipv4" source address="{{ hostvars[item]['ansible_ssh_host'] }}/32" port port="{{ pg_exporter_port }}" protocol="tcp" accept'
+    permanent=true
+    state=enabled
+    zone=public
+    immediate=true
+  with_items: "{{ groups['prometheus'] }}"

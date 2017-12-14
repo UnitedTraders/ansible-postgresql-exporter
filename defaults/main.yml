@@ -1,0 +1,8 @@
+---
+# defaults file for postgres_exporter
+pg_exporter_user: 'pg_exporter'
+pg_exporter_dir: '/opt/postgres_exporter'
+pg_exporter_connection_string: 'DATA_SOURCE_NAME="user=postgres host=/var/run/postgresql/ sslmode=disable"'
+pg_exporter_start_flags: "--extend.query-path={{ pg_exporter_dir }}/metrics.yaml"
+pg_exporter_version: "0.4.1"
+pg_exporter_port: 9187

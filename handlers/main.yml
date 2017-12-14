@@ -1,0 +1,8 @@
+---
+# handlers file for postgres_exporter
+- name: restart postgresql-exporter
+  service: name=postgresql-exporter state=restarted
+
+- name: systemctl daemon-reload
+  command: systemctl daemon-reload
+  notify: restart postgresql-exporter

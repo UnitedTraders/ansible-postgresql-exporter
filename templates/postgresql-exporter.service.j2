@@ -1,0 +1,11 @@
+[Unit]
+Description=Prometheus exporter for Postgresql (https://github.com/wrouesnel/postgres_exporter)
+
+[Service]
+WorkingDirectory={{ pg_exporter_dir }}
+EnvironmentFile={{ pg_exporter_dir }}/env
+ExecStart={{ pg_exporter_dir }}/postgres_exporter_v{{ pg_exporter_version }}_linux-amd64/postgres_exporter {{ pg_exporter_start_flags }}
+User={{ pg_exporter_user }}
+
+[Install]
+WantedBy=multi-user.target
