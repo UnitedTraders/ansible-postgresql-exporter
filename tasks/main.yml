@@ -45,3 +45,11 @@
     zone=public
     immediate=true
   with_items: "{{ groups['prometheus'] }}"
+
+- name: create prometheus job file for metrics gathering
+  template: src=postgresql-prometheus_metrics.yaml.j2 dest=/etc/prometheus/hosts/postgresql-{{ ansible_fqdn }}-{{ deploy_env }}.yaml
+  delegate_to: "{{ item }}"
+  delegate_facts: True
+  when: has_metrics == true
+  notify: reload prometheus
+  with_items: "{{ groups.prometheus | default([]) }}"

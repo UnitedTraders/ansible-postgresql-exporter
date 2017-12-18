@@ -6,3 +6,12 @@
 - name: systemctl daemon-reload
   command: systemctl daemon-reload
   notify: restart postgresql-exporter
+
+- name: reload prometheus
+  uri:
+    url: http://localhost:9090/-/reload
+    method: POST
+  listen: "reload prometheus"
+  delegate_to: "{{ item }}"
+  delegate_facts: True
+  with_items: "{{ groups.prometheus | default([]) }}"
