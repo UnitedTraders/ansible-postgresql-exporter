@@ -23,7 +23,7 @@ pg_database:
         description: "Disk space used by the database"
 
 pg_stat_statements:
-  query: "SELECT queryid, datname, left(query, 50) as short_query, sum(calls) as calls, sum(total_time) as total_time, min(min_time) as min_time, max(max_time) as max_time, sum(mean_time*calls)/sum(calls) as mean_time, sum(stddev_time*calls)/sum(calls) as stddev_time FROM pg_stat_statements JOIN pg_database ON pg_stat_statements.dbid = pg_database.oid group by queryid, short_query, datname"
+  query: "SELECT queryid, datname, left(query, 50) as short_query, sum(calls) as calls, sum(total_time) as total_time, min(min_time) as min_time, max(max_time) as max_time, sum(mean_time*calls)/sum(calls) as mean_time FROM pg_stat_statements JOIN pg_database ON pg_stat_statements.dbid = pg_database.oid group by queryid, short_query, datname"
   metrics:
     - queryid:
         usage: "LABEL"
@@ -49,6 +49,3 @@ pg_stat_statements:
     - mean_time:
         usage: "GAUGE"
         description: "Mean time spent in the statement, in milliseconds"
-    - stddev_time:
-        usage: "GAUGE"
-        description: "Population standard deviation of time spent in the statement, in milliseconds"
