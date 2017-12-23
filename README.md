@@ -1,7 +1,7 @@
 Postgresql-Exporter
 =========
 
-This role installs binary postgres_exporter on Redhat-like system (any other OS with SystemD should work too) from Github releases and allows access from prometheus servers
+This role installs binary postgres_exporter on Redhat-like system (any other OS with systemd should work too) from Github releases and allows access from prometheus servers
 
 Requirements
 ------------
